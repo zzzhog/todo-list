@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>智能待办清单 - 全平台适配</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        h1 i {
+            font-size: 2.5rem;
+        }
+        
+        .date-info {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .app-content {
+            padding: 30px 40px;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .input-group {
+            flex: 1;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .input-section input, .input-section textarea, .input-section .datetime-input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 2px solid #e1e5ee;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        
+        .input-section input:focus, .input-section textarea:focus, .input-section .datetime-input:focus {
+            outline: none;
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+        
+        .input-section textarea {
+            resize: vertical;
+            min-height: 60px;
+            max-height: 120px;
+        }
+        
+        button {
+            padding: 18px 30px;
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(106, 17, 203, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 12px 20px;
+            background: #f0f2f5;
+            color: #555;
+            border-radius: 8px;
+            font-weight: normal;
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #6a11cb;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.95rem;
+            color: #666;
+        }
+        
+        .todo-list {
+            margin-bottom: 40px;
+        }
+        
+        .todo-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            transition: all 0.3s;
+            border-left: 5px solid #6a11cb;
+        }
+        
+        .todo-item:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .todo-item.completed {
+            border-left-color: #4CAF50;
+            opacity: 0.8;
+        }
+        
+        .todo-item.overdue {
+            border-left-color: #f44336;
+        }
+        
+        .todo-item.upcoming {
+            border-left-color: #ff9800;
+        }
+        
+        .todo-checkbox {
+            margin-right: 20px;
+            margin-top: 5px;
+        }
+        
+        .todo-checkbox input {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+        
+        .todo-content {
+            flex: 1;
+        }
+        
+        .todo-text {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .todo-text.completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+        
+        .todo-times {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .time-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .time-group-title {
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .time-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .time-item i {
+            color: #6a11cb;
+            width: 16px;
+        }
+        
+        .time-item.actual i {
+            color: #4CAF50;
+        }
+        
+        .time-item.plan i {
+            color: #ff9800;
+        }
+        
+        .todo-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .todo-actions button {
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .edit-btn {
+            background: #ff9800;
+        }
+        
+        .start-btn {
+            background: #2196F3;
+        }
+        
+        .delete-btn {
+            background: #f44336;
+        }
+        
+        .save-btn {
+            background: #4CAF50;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #c3cfe2;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            border-top: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+        
+        .time-inputs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .time-input-group {
+            flex: 1;
+        }
+        
+        .time-input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .time-input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5ee;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        /* 二维码相关样式 */
+        .qrcode-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .qrcode-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .qrcode-modal h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .qrcode-modal p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        #qrcode {
+            margin: 0 auto 25px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        .qrcode-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .qrcode-actions button {
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .close-qrcode {
+            background: #f0f2f5;
+            color: #555;
+        }
+        
+        .mobile-share-btn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(to right, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .desktop-share-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* 设备检测样式 */
+        .device-indicator {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            display: none; /* 默认隐藏，调试时可设为block */
+        }
+        
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 15px;
+            }
+            
+            header, .app-content {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .input-row {
+                flex-direction: column;
+            }
+            
+            .time-inputs {
+                flex-direction: column;
+            }
+            
+            .todo-item {
+                flex-direction: column;
+            }
+            
+            .todo-checkbox {
+                margin-bottom: 15px;
+            }
+            
+            .todo-times {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .todo-actions {
+                width: 100%;
+                margin-top: 20px;
+                justify-content: flex-end;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+            
+            .filter-btn {
+                flex: 1;
+                min-width: calc(33.333% - 10px);
+                text-align: center;
+                padding: 10px 5px;
+            }
+            
+            .stat-item {
+                min-width: calc(50% - 15px);
+            }
+            
+            /* 移动端二维码弹窗 */
+            .qrcode-modal {
+                width: 90%;
+                padding: 20px;
+            }
+            
+            .qrcode-modal h3 {
+                font-size: 1.5rem;
+            }
+            
+            .mobile-share-btn {
+                display: flex;
+            }
+            
+            .desktop-share-btn {
+                display: none;
+            }
+        }
+        
+        /* 小屏幕手机适配 */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .input-section input, .input-section textarea, .input-section .datetime-input {
+                padding: 16px 12px;
+                font-size: 16px; /* 防止iOS自动缩放 */
+            }
+            
+            button {
+                padding: 16px 20px;
+                font-size: 1rem;
+            }
+            
+            .todo-actions {
+                flex-wrap: wrap;
+            }
+            
+            .todo-actions button {
+                flex: 1;
+                min-width: 80px;
+                margin-bottom: 8px;
+            }
+            
+            .todo-times {
+                font-size: 0.8rem;
+            }
+            
+            .mobile-share-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .qrcode-modal {
+                width: 95%;
+                padding: 15px;
+            }
+        }
+        
+        /* 防止iOS输入框放大 */
+        @media (max-width: 768px) {
+            input[type="text"],
+            input[type="datetime-local"],
+            textarea {
+                font-size: 16px !important;
+            }
+        }
+        
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            button, 
+            .todo-checkbox input,
+            .filter-btn {
+                min-height: 44px; /* Apple推荐的最小触摸目标尺寸 */
+            }
+            
+            .todo-item {
+                padding: 16px;
+            }
+        }
+        
+        /* 平板设备适配 */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                max-width: 95%;
+            }
+            
+            .mobile-share-btn {
+                display: none;
+            }
+            
+            .desktop-share-btn {
+                display: flex;
+            }
+        }
+        
+        /* 编辑模式样式 */
+        .todo-text.edit-mode {
+            display: none;
+        }
+        
+        .edit-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #6a11cb;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .todo-item {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* 状态标签 */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status-overdue {
+            background-color: #ffebee;
+            color: #f44336;
+        }
+        
+        .status-upcoming {
+            background-color: #fff3e0;
+            color: #ff9800;
+        }
+        
+        .status-ontime {
+            background-color: #e8f5e9;
+            color: #4CAF50;
+        }
+        
+        .status-notstarted {
+            background-color: #e3f2fd;
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <!-- 设备检测指示器（调试用） -->
+    <div class="device-indicator" id="device-indicator"></div>
+    
+    <!-- 二维码弹窗 -->
+    <div class="qrcode-overlay" id="qrcode-overlay">
+        <div class="qrcode-modal">
+            <h3><i class="fas fa-mobile-alt"></i> 手机访问</h3>
+            <p>扫描二维码在手机上打开此待办清单</p>
+            <div id="qrcode"></div>
+            <div class="qrcode-actions">
+                <button class="close-qrcode" onclick="closeQRCode()">
+                    <i class="fas fa-times"></i> 关闭
+                </button>
+                <button onclick="sharePage()" id="share-btn">
+                    <i class="fas fa-share-alt"></i> 分享
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 移动端分享按钮 -->
+    <button class="mobile-share-btn" onclick="showQRCode()">
+        <i class="fas fa-mobile-alt"></i>
+    </button>
+    
+    <!-- 桌面端分享按钮 -->
+    <button class="desktop-share-btn" onclick="showQRCode()">
+        <i class="fas fa-mobile-alt"></i> 手机访问
+    </button>
+    
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-clock"></i> 时间管理待办清单</h1>
+            <p class="date-info">今天是2026年3月11日，星期三，丙午年（马年）正月廿三</p>
+        </header>
+        
+        <div class="app-content">
+            <div class="input-section">
+                <div class="input-row">
+                    <div class="input-group" style="flex: 2;">
+                        <label for="todo-input">待办事项</label>
+                        <input type="text" id="todo-input" placeholder="请输入新的待办事项...">
+                    </div>
+                    <div class="input-group" style="flex: 1; align-self: flex-end;">
+                        <button id="add-btn">
+                            <i class="fas fa-plus-circle"></i> 添加事项
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="time-inputs">
+                    <div class="time-input-group">
+                        <label for="planned-start">计划开始时间</label>
+                        <input type="datetime-local" id="planned-start">
+                    </div>
+                    <div class="time-input-group">
+                        <label for="planned-finish">计划完成时间</label>
+                        <input type="datetime-local" id="planned-finish">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="active">待完成</button>
+                <button class="filter-btn" data-filter="completed">已完成</button>
+                <button class="filter-btn" data-filter="overdue">已超期</button>
+                <button class="filter-btn" data-filter="upcoming">即将到期</button>
+                <button id="clear-completed" class="filter-btn">
+                    <i class="fas fa-trash"></i> 清空已完成
+                </button>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="total-count">0</div>
+                    <div class="stat-label">总事项数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="active-count">0</div>
+                    <div class="stat-label">待完成</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="completed-count">0</div>
+                    <div class="stat-label">已完成</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="overdue-count">0</div>
+                    <div class="stat-label">已超期</div>
+                </div>
+            </div>
+            
+            <div class="todo-list" id="todo-list">
+                <!-- 待办事项会动态添加到这里 -->
+                <div class="empty-state" id="empty-state">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3>暂无待办事项</h3>
+                    <p>添加您的第一个待办事项，开始高效管理您的时间！</p>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> 使用说明</h3>
+                <ul style="margin-left: 20px; margin-top: 10px; color: #666; line-height: 1.6;">
+                    <li><strong>创建时间</strong>: 任务被添加到系统的时间</li>
+                    <li><strong>计划开始时间</strong>: 您计划开始此任务的时间（可手动设置）</li>
+                    <li><strong>实际开始时间</strong>: 点击"开始任务"按钮记录的实际开始时间</li>
+                    <li><strong>计划完成时间</strong>: 您计划完成此任务的时间（可手动设置）</li>
+                    <li><strong>实际完成时间</strong>: 标记任务为完成时记录的时间</li>
+                    <li>点击"开始任务"按钮可以记录实际开始时间</li>
+                    <li>点击复选框可以标记事项为完成/未完成状态</li>
+                    <li>点击编辑按钮可以修改事项内容和计划时间</li>
+                    <li>使用上方筛选按钮可以查看不同状态的事项</li>
+                    <li>点击右下角按钮可生成二维码，在手机上访问</li>
+                    <li>数据会自动保存在浏览器中，关闭页面不会丢失</li>
+                </ul>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2026 时间管理待办清单 | 数据存储在本地浏览器中 | 设备适配: <span id="device-type">检测中...</span></p>
+        </footer>
+    </div>
+
+    <script>
+        // 设备检测
+        function detectDevice() {
+            const userAgent = navigator.userAgent;
+            const screenWidth = window.screen.width;
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+            const isTablet = /iPad|Android(?!.*Mobile)|Tablet|Silk/i.test(userAgent);
+            const isDesktop = !isMobile && !isTablet;
+            
+            let deviceType = '未知设备';
+            let deviceClass = 'desktop';
+            
+            if (isMobile && screenWidth < 768) {
+                deviceType = '手机';
+                deviceClass = 'mobile';
+            } else if (isTablet || (screenWidth >= 768 && screenWidth <= 1024)) {
+                deviceType = '平板';
+                deviceClass = 'tablet';
+            } else {
+                deviceType = '桌面设备';
+                deviceClass = 'desktop';
+            }
+            
+            // 更新页面显示
+            document.getElementById('device-type').textContent = deviceType;
+            
+            // 更新设备指示器（调试用）
+            const deviceIndicator = document.getElementById('device-indicator');
+            deviceIndicator.textContent = `${deviceType} (${screenWidth}px)`;
+            
+            return {
+                type: deviceType,
+                class: deviceClass,
+                isMobile: isMobile,
+                isTablet: isTablet,
+                isDesktop: isDesktop,
+                screenWidth: screenWidth
+            };
+        }
+        
+        // 获取DOM元素
+        const todoInput = document.getElementById('todo-input');
+        const plannedStartInput = document.getElementById('planned-start');
+        const plannedFinishInput = document.getElementById('planned-finish');
+        const addBtn = document.getElementById('add-btn');
+        const todoList = document.getElementById('todo-list');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const clearCompletedBtn = document.getElementById('clear-completed');
+        const emptyState = document.getElementById('empty-state');
+        
+        // 统计元素
+        const totalCountElement = document.getElementById('total-count');
+        const activeCountElement = document.getElementById('active-count');
+        const completedCountElement = document.getElementById('completed-count');
+        const overdueCountElement = document.getElementById('overdue-count');
+        
+        // 当前筛选状态
+        let currentFilter = 'all';
+        
+        // 从localStorage加载待办事项或初始化空数组
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        
+        // 设备信息
+        let deviceInfo = null;
+        
+        // 初始化应用
+        function initApp() {
+            // 检测设备
+            deviceInfo = detectDevice();
+            
+            // 设置默认时间为当前时间和明天
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            // 格式化日期时间用于输入框
+            const formatForInput = (date) => {
+                return date.toISOString().slice(0, 16);
+            };
+            
+            plannedStartInput.value = formatForInput(now);
+            plannedFinishInput.value = formatForInput(tomorrow);
+            
+            renderTodos();
+            updateStats();
+            
+            // 添加示例数据（如果第一次使用）
+            if (todos.length === 0) {
+                addExampleTodos();
+            }
+            
+            // 根据设备类型调整UI
+            adjustUIForDevice();
+            
+            // 监听窗口大小变化
+            window.addEventListener('resize', function() {
+                deviceInfo = detectDevice();
+                adjustUIForDevice();
+            });
+        }
+        
+        // 根据设备类型调整UI
+        function adjustUIForDevice() {
+            const shareBtn = document.getElementById('share-btn');
+            
+            if (deviceInfo.isMobile) {
+                // 移动设备：调整分享按钮文本
+                if (shareBtn) {
+                    shareBtn.innerHTML = '<i class="fas fa-share-alt"></i> 分享应用';
+                }
+                
+                // 移动设备上自动调整时间输入框类型
+                if ('ontouchstart' in window) {
+                    // 触摸设备，使用更适合触摸的日期选择器
+                    const dateInputs = document.querySelectorAll('input[type="datetime-local"]');
+                    dateInputs.forEach(input => {
+                        input.setAttribute('type', 'datetime-local');
+                    });
+                }
+            } else {
+                // 桌面设备
+                if (shareBtn) {
+                    shareBtn.innerHTML = '<i class="fas fa-qrcode"></i> 生成二维码';
+                }
+            }
+        }
+        
+        // 添加示例待办事项
+        function addExampleTodos() {
+            const now = new Date();
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const nextWeek = new Date(now);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            
+            const exampleTodos = [
+                {
+                    id: Date.now(),
+                    text: "完成项目需求文档",
+                    createdAt: formatDate(now),
+                    plannedStartTime: formatDate(now),
+                    actualStartTime: formatDate(now),
+                    plannedFinishTime: formatDate(tomorrow),
+                    actualFinishTime: null,
+                    completed: false
+                },
+                {
+                    id: Date.now() + 1,
+                    text: "准备团队周会材料",
+                    createdAt: formatDate(yesterday),
+                    plannedStartTime: formatDate(yesterday),
+                    actualStartTime: formatDate(yesterday),
+                    plannedFinishTime: formatDate(now),
+                    actualFinishTime: formatDate(now),
+                    completed: true
+                },
+                {
+                    id: Date.now() + 2,
+                    text: "与设计团队沟通UI优化",
+                    createdAt: formatDate(now),
+                    plannedStartTime: formatDate(tomorrow),
+                    actualStartTime: null,
+                    plannedFinishTime: formatDate(nextWeek),
+                    actualFinishTime: null,
+                    completed: false
+                }
+            ];
+            
+            todos = exampleTodos;
+            saveTodos();
+            renderTodos();
+            updateStats();
+        }
+        
+        // 保存待办事项到localStorage
+        function saveTodos() {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+        
+        // 格式化日期时间
+        function formatDate(date) {
+            if (!date) return null;
+            
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+        
+        // 从格式化字符串创建Date对象
+        function parseDate(dateStr) {
+            if (!dateStr) return null;
+            
+            const [datePart, timePart] = dateStr.split(' ');
+            const [year, month, day] = datePart.split('-').map(Number);
+            const [hours, minutes] = timePart.split(':').map(Number);
+            
+            return new Date(year, month - 1, day, hours, minutes);
+        }
+        
+        // 获取当前日期时间
+        function getCurrentDateTime() {
+            return formatDate(new Date());
+        }
+        
+        // 获取状态标签
+        function getStatusBadge(todo) {
+            const now = new Date();
+            const plannedFinish = parseDate(todo.plannedFinishTime);
+            
+            if (todo.completed) {
+                const actualFinish = parseDate(todo.actualFinishTime);
+                if (plannedFinish && actualFinish && actualFinish <= plannedFinish) {
+                    return '<span class="status-badge status-ontime">按时完成</span>';
+                } else if (plannedFinish && actualFinish && actualFinish > plannedFinish) {
+                    return '<span class="status-badge status-overdue">超期完成</span>';
+                } else {
+                    return '<span class="status-badge status-ontime">已完成</span>';
+                }
+            } else {
+                if (!todo.actualStartTime) {
+                    return '<span class="status-badge status-notstarted">未开始</span>';
+                } else if (plannedFinish && now > plannedFinish) {
+                    return '<span class="status-badge status-overdue">已超期</span>';
+                } else if (plannedFinish) {
+                    const timeDiff = plannedFinish - now;
+                    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                    if (daysDiff <= 2) {
+                        return `<span class="status-badge status-upcoming">${daysDiff}天内到期</span>`;
+                    }
+                }
+            }
+            
+            return '<span class="status-badge status-ontime">进行中</span>';
+        }
+        
+        // 获取CSS类名
+        function getStatusClass(todo) {
+            if (todo.completed) return 'completed';
+            
+            const now = new Date();
+            const plannedFinish = parseDate(todo.plannedFinishTime);
+            
+            if (plannedFinish && now > plannedFinish) {
+                return 'overdue';
+            } else if (plannedFinish) {
+                const timeDiff = plannedFinish - now;
+                const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                if (daysDiff <= 2) {
+                    return 'upcoming';
+                }
+            }
+            
+            return '';
+        }
+        
+        // 添加新的待办事项
+        function addTodo() {
+            const text = todoInput.value.trim();
+            
+            if (text === '') {
+                alert('请输入待办事项内容！');
+                todoInput.focus();
+                return;
+            }
+            
+            // 获取计划时间
+            const plannedStart = plannedStartInput.value ? new Date(plannedStartInput.value) : new Date();
+            const plannedFinish = plannedFinishInput.value ? new Date(plannedFinishInput.value) : null;
+            
+            if (plannedFinish && plannedFinish <= plannedStart) {
+                alert('计划完成时间必须晚于计划开始时间！');
+                plannedFinishInput.focus();
+                return;
+            }
+            
+            const newTodo = {
+                id: Date.now(),
+                text: text,
+                createdAt: getCurrentDateTime(),
+                plannedStartTime: formatDate(plannedStart),
+                actualStartTime: null, // 初始为null，用户点击开始任务时设置
+                plannedFinishTime: plannedFinish ? formatDate(plannedFinish) : null,
+                actualFinishTime: null,
+                completed: false
+            };
+            
+            todos.unshift(newTodo);
+            saveTodos();
+            renderTodos();
+            updateStats();
+            
+            // 清空输入框
+            todoInput.value = '';
+            todoInput.focus();
+            
+            // 重置时间为当前时间和明天
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            plannedStartInput.value = now.toISOString().slice(0, 16);
+            plannedFinishInput.value = tomorrow.toISOString().slice(0, 16);
+            
+            // 显示添加成功提示
+            showNotification('待办事项已添加！');
+        }
+        
+        // 开始任务
+        function startTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            
+            if (todo && !todo.actualStartTime) {
+                todo.actualStartTime = getCurrentDateTime();
+                saveTodos();
+                renderTodos();
+                updateStats();
+                
+                showNotification('任务已开始！已记录实际开始时间。');
+            } else if (todo && todo.actualStartTime) {
+                alert('此任务已经开始过了！');
+            }
+        }
+        
+        // 切换待办事项完成状态
+        function toggleTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            
+            if (todo) {
+                todo.completed = !todo.completed;
+                
+                if (todo.completed) {
+                    // 标记为完成，记录实际完成时间
+                    todo.actualFinishTime = getCurrentDateTime();
+                    
+                    // 如果还没有实际开始时间，则设置实际开始时间为现在
+                    if (!todo.actualStartTime) {
+                        todo.actualStartTime = getCurrentDateTime();
+                    }
+                } else {
+                    // 重新打开，清除实际完成时间
+                    todo.actualFinishTime = null;
+                }
+                
+                saveTodos();
+                renderTodos();
+                updateStats();
+                
+                // 显示状态变更提示
+                const action = todo.completed ? '完成' : '重新打开';
+                showNotification(`事项已标记为${action}！`);
+            }
+        }
+        
+        // 删除待办事项
+        function deleteTodo(id) {
+            if (confirm('确定要删除这个待办事项吗？')) {
+                todos = todos.filter(t => t.id !== id);
+                saveTodos();
+                renderTodos();
+                updateStats();
+                
+                // 显示删除提示
+                showNotification('待办事项已删除！');
+            }
+        }
+        
+        // 编辑待办事项
+        function editTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (!todo) return;
+            
+            const todoItem = document.querySelector(`.todo-item[data-id="${id}"]`);
+            const todoText = todoItem.querySelector('.todo-text');
+            const editInput = todoItem.querySelector('.edit-input');
+            const editPlannedStart = todoItem.querySelector('.edit-planned-start');
+            const editPlannedFinish = todoItem.querySelector('.edit-planned-finish');
+            
+            // 切换到编辑模式
+            todoText.classList.add('edit-mode');
+            editInput.style.display = 'block';
+            editInput.value = todo.text;
+            editInput.focus();
+            
+            // 设置时间输入框的值
+            if (editPlannedStart) {
+                const plannedStartDate = parseDate(todo.plannedStartTime);
+                if (plannedStartDate) {
+                    editPlannedStart.value = plannedStartDate.toISOString().slice(0, 16);
+                }
+            }
+            
+            if (editPlannedFinish) {
+                const plannedFinishDate = parseDate(todo.plannedFinishTime);
+                if (plannedFinishDate) {
+                    editPlannedFinish.value = plannedFinishDate.toISOString().slice(0, 16);
+                }
+            }
+            
+            // 隐藏编辑按钮，显示保存按钮
+            todoItem.querySelector('.edit-btn').style.display = 'none';
+            todoItem.querySelector('.save-btn').style.display = 'flex';
+        }
+        
+        // 保存编辑
+        function saveEdit(id) {
+            const todo = todos.find(t => t.id === id);
+            if (!todo) return;
+            
+            const todoItem = document.querySelector(`.todo-item[data-id="${id}"]`);
+            const editInput = todoItem.querySelector('.edit-input');
+            const editPlannedStart = todoItem.querySelector('.edit-planned-start');
+            const editPlannedFinish = todoItem.querySelector('.edit-planned-finish');
+            
+            const newText = editInput.value.trim();
+            
+            if (newText === '') {
+                alert('待办事项内容不能为空！');
+                editInput.focus();
+                return;
+            }
+            
+            // 获取编辑后的计划时间
+            let newPlannedStart = null;
+            let newPlannedFinish = null;
+            
+            if (editPlannedStart && editPlannedStart.value) {
+                newPlannedStart = formatDate(new Date(editPlannedStart.value));
+            }
+            
+            if (editPlannedFinish && editPlannedFinish.value) {
+                newPlannedFinish = formatDate(new Date(editPlannedFinish.value));
+            }
+            
+            // 验证时间逻辑
+            if (newPlannedStart && newPlannedFinish) {
+                const startDate = parseDate(newPlannedStart);
+                const finishDate = parseDate(newPlannedFinish);
+                
+                if (finishDate <= startDate) {
+                    alert('计划完成时间必须晚于计划开始时间！');
+                    return;
+                }
+            }
+            
+            // 更新待办事项
+            todo.text = newText;
+            if (newPlannedStart) todo.plannedStartTime = newPlannedStart;
+            if (newPlannedFinish) todo.plannedFinishTime = newPlannedFinish;
+            
+            saveTodos();
+            
+            // 切换回显示模式
+            const todoText = todoItem.querySelector('.todo-text');
+            todoText.textContent = newText;
+            todoText.classList.remove('edit-mode');
+            editInput.style.display = 'none';
+            
+            // 切换按钮状态
+            todoItem.querySelector('.edit-btn').style.display = 'flex';
+            todoItem.querySelector('.save-btn').style.display = 'none';
+            
+            // 重新渲染以更新时间显示
+            renderTodos();
+            updateStats();
+            
+            // 显示保存成功提示
+            showNotification('待办事项已更新！');
+        }
+        
+        // 清空已完成事项
+        function clearCompleted() {
+            if (confirm('确定要清空所有已完成的事项吗？此操作不可撤销。')) {
+                const completedCount = todos.filter(t => t.completed).length;
+                
+                if (completedCount === 0) {
+                    alert('没有已完成的事项可清除！');
+                    return;
+                }
+                
+                todos = todos.filter(t => !t.completed);
+                saveTodos();
+                renderTodos();
+                updateStats();
+                
+                // 显示清除提示
+                showNotification(`已清除${completedCount}个已完成事项！`);
+            }
+        }
+        
+        // 筛选待办事项
+        function filterTodos(filter) {
+            currentFilter = filter;
+            
+            // 更新筛选按钮状态
+            filterButtons.forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            renderTodos();
+        }
+        
+        // 渲染待办事项列表
+        function renderTodos() {
+            // 根据筛选条件过滤待办事项
+            let filteredTodos = [];
+            const now = new Date();
+            
+            if (currentFilter === 'active') {
+                filteredTodos = todos.filter(t => !t.completed);
+            } else if (currentFilter === 'completed') {
+                filteredTodos = todos.filter(t => t.completed);
+            } else if (currentFilter === 'overdue') {
+                filteredTodos = todos.filter(t => {
+                    if (t.completed) return false;
+                    const plannedFinish = parseDate(t.plannedFinishTime);
+                    return plannedFinish && now > plannedFinish;
+                });
+            } else if (currentFilter === 'upcoming') {
+                filteredTodos = todos.filter(t => {
+                    if (t.completed) return false;
+                    const plannedFinish = parseDate(t.plannedFinishTime);
+                    if (!plannedFinish) return false;
+                    const timeDiff = plannedFinish - now;
+                    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                    return daysDiff <= 2 && daysDiff > 0;
+                });
+            } else {
+                filteredTodos = [...todos];
+            }
+            
+            // 清空列表
+            todoList.innerHTML = '';
+            
+            // 如果没有待办事项，显示空状态
+            if (filteredTodos.length === 0) {
+                const emptyStateClone = emptyState.cloneNode(true);
+                todoList.appendChild(emptyStateClone);
+                return;
+            }
+            
+            // 渲染每个待办事项
+            filteredTodos.forEach(todo => {
+                const statusClass = getStatusClass(todo);
+                const statusBadge = getStatusBadge(todo);
+                
+                const todoItem = document.createElement('div');
+                todoItem.className = `todo-item ${statusClass}`;
+                todoItem.setAttribute('data-id', todo.id);
+                
+                todoItem.innerHTML = `
+                    <div class="todo-checkbox">
+                        <input type="checkbox" ${todo.completed ? 'checked' : ''}>
+                    </div>
+                    <div class="todo-content">
+                        <div class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text} ${statusBadge}</div>
+                        <textarea class="edit-input" style="display: none;" placeholder="编辑待办事项...">${todo.text}</textarea>
+                        
+                        <div class="time-inputs" style="display: none; margin-bottom: 10px;">
+                            <div class="time-input-group">
+                                <label>计划开始时间</label>
+                                <input type="datetime-local" class="edit-planned-start">
+                            </div>
+                            <div class="time-input-group">
+                                <label>计划完成时间</label>
+                                <input type="datetime-local" class="edit-planned-finish">
+                            </div>
+                        </div>
+                        
+                        <div class="todo-times">
+                            <div class="time-group">
+                                <div class="time-group-title">创建时间</div>
+                                <div class="time-item">
+                                    <i class="far fa-calendar-plus"></i>
+                                    <span>${todo.createdAt}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="time-group">
+                                <div class="time-group-title">开始时间</div>
+                                <div class="time-item plan">
+                                    <i class="far fa-clock"></i>
+                                    <span>计划: ${todo.plannedStartTime || '未设置'}</span>
+                                </div>
+                                <div class="time-item actual">
+                                    <i class="far fa-play-circle"></i>
+                                    <span>实际: ${todo.actualStartTime || '未开始'}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="time-group">
+                                <div class="time-group-title">完成时间</div>
+                                <div class="time-item plan">
+                                    <i class="far fa-calendar-check"></i>
+                                    <span>计划: ${todo.plannedFinishTime || '未设置'}</span>
+                                </div>
+                                <div class="time-item actual">
+                                    <i class="far fa-check-circle"></i>
+                                    <span>实际: ${todo.actualFinishTime || '未完成'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="todo-actions">
+                        ${!todo.actualStartTime && !todo.completed ? `
+                        <button class="start-btn" style="background: #2196F3;">
+                            <i class="fas fa-play"></i> 开始
+                        </button>
+                        ` : ''}
+                        <button class="edit-btn" style="background: #ff9800;">
+                            <i class="fas fa-edit"></i> 编辑
+                        </button>
+                        <button class="save-btn" style="background: #4CAF50; display: none;">
+                            <i class="fas fa-save"></i> 保存
+                        </button>
+                        <button class="delete-btn" style="background: #f44336;">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </div>
+                `;
+                
+                // 添加事件监听器
+                const checkbox = todoItem.querySelector('input[type="checkbox"]');
+                checkbox.addEventListener('change', () => toggleTodo(todo.id));
+                
+                const startBtn = todoItem.querySelector('.start-btn');
+                if (startBtn) {
+                    startBtn.addEventListener('click', () => startTodo(todo.id));
+                }
+                
+                const editBtn = todoItem.querySelector('.edit-btn');
+                editBtn.addEventListener('click', () => editTodo(todo.id));
+                
+                const saveBtn = todoItem.querySelector('.save-btn');
+                saveBtn.addEventListener('click', () => saveEdit(todo.id));
+                
+                const deleteBtn = todoItem.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', () => deleteTodo(todo.id));
+                
+                // 允许按Enter键保存编辑
+                const editInput = todoItem.querySelector('.edit-input');
+                editInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        saveEdit(todo.id);
+                    }
+                });
+                
+                todoList.appendChild(todoItem);
+            });
+        }
+        
+        // 更新统计信息
+        function updateStats() {
+            const totalCount = todos.length;
+            const activeCount = todos.filter(t => !t.completed).length;
+            const completedCount = todos.filter(t => t.completed).length;
+            
+            // 计算已超期事项
+            const now = new Date();
+            const overdueCount = todos.filter(t => {
+                if (t.completed) return false;
+                const plannedFinish = parseDate(todo.plannedFinishTime);
+                return plannedFinish && now > plannedFinish;
+            }).length;
+            
+            totalCountElement.textContent = totalCount;
+            activeCountElement.textContent = activeCount;
+            completedCountElement.textContent = completedCount;
+            overdueCountElement.textContent = overdueCount;
+        }
+        
+        // 二维码功能
+        function loadQRCodeLib() {
+            return new Promise((resolve, reject) => {
+                if (window.QRCode) {
+                    resolve();
+                    return;
+                }
+                
+                // 动态加载QRCode.js库
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        
+        // 显示二维码弹窗
+        async function showQRCode() {
+            try {
+                // 显示加载状态
+                const overlay = document.getElementById('qrcode-overlay');
+                overlay.style.display = 'flex';
+                document.getElementById('qrcode').innerHTML = '<p>生成二维码中...</p>';
+                
+                // 加载二维码库
+                await loadQRCodeLib();
+                
+                // 获取当前页面URL
+                const url = window.location.href;
+                const qrcodeDiv = document.getElementById('qrcode');
+                qrcodeDiv.innerHTML = '';
+                
+                // 根据设备类型调整二维码大小
+                const qrSize = deviceInfo.isMobile ? 180 : 200;
+                
+                // 生成二维码
+                new QRCode(qrcodeDiv, {
+                    text: url,
+                    width: qrSize,
+                    height: qrSize,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                // 添加提示文字
+                const hint = document.createElement('p');
+                hint.textContent = '使用手机扫描二维码访问';
+                hint.style.marginTop = '10px';
+                hint.style.fontSize = '0.9rem';
+                hint.style.color = '#666';
+                qrcodeDiv.appendChild(hint);
+                
+            } catch (error) {
+                console.error('加载二维码库失败:', error);
+                document.getElementById('qrcode').innerHTML = 
+                    '<p style="color: red;">二维码生成失败，请检查网络连接</p>';
+            }
+        }
+        
+        // 关闭二维码弹窗
+        function closeQRCode() {
+            document.getElementById('qrcode-overlay').style.display = 'none';
+        }
+        
+        // 分享页面
+        function sharePage() {
+            const url = window.location.href;
+            const title = '时间管理待办清单';
+            
+            if (navigator.share && deviceInfo.isMobile) {
+                // 使用Web Share API（移动设备支持）
+                navigator.share({
+                    title: title,
+                    text: '分享我的待办事项清单',
+                    url: url,
+                })
+                .then(() => console.log('分享成功'))
+                .catch((error) => {
+                    console.log('分享失败:', error);
+                    copyToClipboard(url);
+                });
+            } else {
+                // 桌面设备或浏览器不支持分享API
+                copyToClipboard(url);
+            }
+        }
+        
+        // 复制到剪贴板
+        function copyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showNotification('链接已复制到剪贴板！');
+                } else {
+                    showNotification('复制失败，请手动复制链接');
+                }
+            } catch (err) {
+                console.error('复制失败:', err);
+                showNotification('复制失败，请手动复制链接');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            // 如果已有通知，先移除
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4CAF50;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+            `;
+            
+            // 添加淡出动画样式
+            if (!document.querySelector('#notification-styles')) {
+                const style = document.createElement('style');
+                style.id = 'notification-styles';
+                style.textContent = `
+                    @keyframes fadeOut {
+                        from { opacity: 1; }
+                        to { opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(notification);
+            
+            // 3秒后移除通知
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+        
+        // 事件监听器
+        addBtn.addEventListener('click', addTodo);
+        
+        todoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+        
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.id !== 'clear-completed') {
+                    filterTodos(btn.dataset.filter);
+                }
+            });
+        });
+        
+        clearCompletedBtn.addEventListener('click', clearCompleted);
+        
+        // 点击二维码弹窗外部关闭
+        document.getElementById('qrcode-overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeQRCode();
+            }
+        });
+        
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
